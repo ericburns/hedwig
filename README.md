@@ -1,5 +1,5 @@
 # Hedwig 🦉
-Hedwig Broker System. [Read specification here](https://github.com/moechaieb/hedwig).
+Hedwig Broker System. [Read specification here](https://docs.google.com/document/d/1ruZpInjAZCMR-Nwf0VQsFUXRVQ9ZShwh_cVT9VdEXRM/edit#).
 
 Todo:
 - Implement locking/concurrency control
