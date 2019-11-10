@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+require 'bundler/inline'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'redis'
+  gem 'colorize'
+  gem 'tty-progressbar'
+end
+
+def get_queue_size(priority, clients)
+  size = 0
+
+  clients.each do |client|
+    size += client.zcard("queue:#{priority}")
+  end
+
+  size
+end
+
+jobs_redis_partition_count = 3
+possible_priorities = (0..4)
+progress_bars = {}
+partition_redis_clients = {}
+
+(1...jobs_redis_partition_count).each do |partition_id|
+  partition_redis_clients[partition_id] = Redis.new(url: "redis://localhost:6379/#{partition_id}")
+end
+
+multi_bar = TTY::ProgressBar::Multi.new("Total queue size   [:bar]", width: 50)
+
+possible_priorities.each do |priority|
+  progress_bars[priority] = multi_bar.register("Priority Queue #{priority} [:bar]", total: 25, width: 50)
+end
+
+loop do
+  progress_bars.each do |priority, progress_bar|
+    progress_bar.current = get_queue_size(priority, partition_redis_clients.values)
+  end
+end

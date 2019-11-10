@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'logger'
+require 'bundler/inline'
+require 'json'
+require_relative '../worker'
+require_relative '../job'
+require_relative '../command_table'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'redis'
+  gem 'colorize'
+  gem 'pry'
+  gem 'pry-byebug'
+end
+
+require 'pry'
+
+logger = Logger.new("log/hedwig.log")
+worker = Worker.new(logger)
+logger.info("[Hedwig Worker id=#{worker.id}]".light_blue + " Booting...")
+
+worker.setup_signal_handlers
+worker.run
+
+logger.info("[Hedwig Worker id=#{worker.id}]".light_blue + " Shutdown.")

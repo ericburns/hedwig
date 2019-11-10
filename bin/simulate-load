@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'logger'
+require 'bundler/inline'
+require 'json'
+require_relative '../job'
+require_relative '../command_table'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'redis'
+  gem 'colorize'
+  gem 'pry'
+  gem 'pry-byebug'
+end
+
+require 'pry'
+
+def create_job(priority: rand(5), logger:)
+  Job.new(priority: priority, logger: logger)
+end
+
+logger = Logger.new("log/hedwig.log")
+logger.info("Load simulation is ON".light_red)
+
+command_table = CommandTable::Worker.new
+loop do
+  job = create_job(logger: logger)
+  command_table.enqueue_job(job)
+  logger.info("[Load Simulator] Enqueued job_id=#{job.id}".light_red)
+  sleep 1 # Sleeping on purpose to be able to follow logs
+end
+
+

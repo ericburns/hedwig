@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'logger'
+require 'bundler/inline'
+require 'json'
+require_relative '../broker'
+require_relative '../job'
+require_relative '../command_table'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'redis'
+  gem 'colorize'
+  gem 'pry'
+  gem 'pry-byebug'
+end
+
+require 'pry'
+
+logger = Logger.new("log/hedwig.log")
+partition_id = 1
+
+OptionParser.new do |o|
+  o.on('-p', '--partition-id <integer>', Integer, "Partition ID to run a broker for") do |arg|
+    partition_id = arg
+  end
+end.parse!(ARGV)
+
+logger.info("[Hedwig Broker partition_id=#{partition_id}]".green + " Booting...")
+
+broker = Broker.new(partition_id, logger)
+broker.setup_signal_handlers
+broker.run
+
+logger.info("[Hedwig Broker partition_id=#{partition_id}]".green + " Shutdown.")
