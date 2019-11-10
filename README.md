@@ -1,6 +1,10 @@
 # Hedwig 🦉
 Hedwig Broker System. [Read specification here](https://github.com/moechaieb/hedwig).
 
+Todo:
+- Implement locking/concurrency control
+- Simulate shop moves/failovers and 
+- Implement a management API (queue sizes, worker status, job status)
 
 ### How to
 
